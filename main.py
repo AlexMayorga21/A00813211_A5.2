@@ -43,9 +43,30 @@ def main():
         print(f"elapsed_time: {elapsed_time}")
         return
 
-    print(price_catalog)
+    product_prices = {product['title']: product['price'] for product in price_catalog}
 
-    print(sales_summary)
+    # Calculate total
+    total = 0
+    for sale in sales_summary:
+        try:
+            total += product_prices[sale['Product']] * int(sale['Quantity'])
+        except KeyError:
+            print(f"Error: Product not found in catalog for sale {sale.get('SALE_ID', 'unknown')}")
+        except ValueError:
+            print(f"Error: Invalid quantity for sale {sale.get('SALE_ID', 'unknown')}")
+
+
+    # Format total to two digits decimal
+    total = round(total, 2)
+
+    elapsed_time = time.time() - start_time
+    # Print and write results
+    with open('SalesResults.txt', 'w', encoding='utf-8') as file:
+        file.write(f"total: {total}\n")
+        file.write(f"elapsed time: {elapsed_time}\n")
+    print(f"total: {total}")
+    print(f"elapsed time: {elapsed_time}")
+
 
 
 if __name__ == '__main__':
