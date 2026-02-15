@@ -47,13 +47,20 @@ def main():
 
     # Calculate total
     total = 0
+    output = f"{'Product':<30} {'Quantity':>10} {'Price':>10} {'Total':>12}\n"
+    output += "-" * 62 + "\n"
     for sale in sales_summary:
         try:
-            total += product_prices[sale['Product']] * int(sale['Quantity'])
+            product_name = sale['Product']
+            quantity = int(sale['Quantity'])
+            price = product_prices[product_name]
+            item_total = price * quantity
+            output += f"{product_name:<30} {quantity:>10} ${price:>9.2f} ${item_total:>11.2f}\n"
+            total += item_total
         except KeyError:
-            print(f"Error: Product not found in catalog for sale {sale.get('SALE_ID', 'unknown')}")
+            output += f"ERROR: Product '{sale.get('Product', 'unknown')}' not found\n"
         except ValueError:
-            print(f"Error: Invalid quantity for sale {sale.get('SALE_ID', 'unknown')}")
+            output += f"ERROR: Invalid quantity for '{sale.get('Product', 'unknown')}'\n"
 
 
     # Format total to two digits decimal
@@ -62,8 +69,10 @@ def main():
     elapsed_time = time.time() - start_time
     # Print and write results
     with open('SalesResults.txt', 'w', encoding='utf-8') as file:
+        file.write(output)
         file.write(f"total: {total}\n")
         file.write(f"elapsed time: {elapsed_time}\n")
+    print(output)
     print(f"total: {total}")
     print(f"elapsed time: {elapsed_time}")
 
